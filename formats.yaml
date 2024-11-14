@@ -1,0 +1,46 @@
+formats:
+  alpaca_format:
+    instruction_key: instruction
+    input_key: input
+    output_key: output
+  
+  instruction_response:
+    instruction_key: instruction
+    output_key: response
+  
+  cap_instruction_response:
+    instruction_key: INSTRUCTION
+    output_key: RESPONSE
+  
+  prompt_chosen:
+    instruction_key: prompt
+    output_key: chosen
+  
+  instr_chosen_resp:
+    instruction_key: instruction
+    output_key: chosen_response
+  
+  input_output:
+    instruction_key: input
+    output_key: output
+
+  question_answer:
+    instruction_key: question
+    output_key: answer
+  
+  question_response:
+    instruction_key: question
+    output_key: response
+
+  question_solution:
+    instruction_key: question
+    output_key: solution
+    input_key: choices
+    input_processor: join_choices  # Reference to a function name
+  
+  info_summary:
+    instruction_key: instruction
+    output_key: summary
+    input_key: info
+    instruction_processor: random_summary_prompt  # Reference to a function name
+    input_processor: extract_post_info  # Reference to a function name

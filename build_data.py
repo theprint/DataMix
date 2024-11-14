@@ -4,58 +4,58 @@ import collect_data as cld
 import json
 import os
 
-# Don't forget to set your Huggingface token in the .env file as:
-# HF_TOKEN = "WhateverYourTokenValueIs"
-load_dotenv() 
+# Load environment variables
+load_dotenv()
 hf_token = os.getenv("HF_TOKEN")
 
 config = {
-    "total_samples": 20000,  # Set this to your desired dataset size.
-    "dataset_name": "MyDataSet",  # Set this to your desired dataset name.
-    "hf_token": hf_token,  # Only needed for gated datasets.
-    "seed": 18072005  # The seed value makes it so that random values can be recreated exactly.
+    "total_samples": 80000,
+    "dataset_name": "VanRossum",
+    "hf_token": hf_token,
+    "seed": 18072005
 }
 
-def save_file(setname=config["dataset_name"]):
+def save_file(new_dataset):
     now = datetime.now()
     timestamp = now.strftime("%d%m%y")
-    filename = f"export/{setname}-{round(len(new_dataset) / 1000, 2)}k-{timestamp}.json"
+    os.makedirs("export", exist_ok=True)
+    filename = f"export/{config['dataset_name']}-{round(len(new_dataset) / 1000, 2)}k-{timestamp}.json"
+    
     with open(filename, 'w', encoding='utf-8') as f:
         print(f"The {config['dataset_name']} data set saved with a total of {len(new_dataset)} entries.")
         json.dump(new_dataset, f, ensure_ascii=False, indent=2)
 
-
 if __name__ == "__main__":
     # Empty data structure
     new_dataset = []
-
-    # Data sets with instruction-response format
-    instruction_response_sets = [("grimulkan/physical-reasoning", 0.02), ("grimulkan/interpersonal-relational-reasoning", 0.01),
-                                ("grimulkan/theory-of-mind", 0.02)]
-    # Get data
-    cld.get_instruction_response(instruction_response_sets)
-
-    # Data sets with instruction-chosen_response format
-    instr_chosen_response_sets = [("argilla/distilabel-math-preference-dpo", 0.1)]
-    # Get data
-    cld.get_instr_chosen_response(instr_chosen_response_sets)
-
-    # Data sets with capitalized instruction-response format
-    cap_instr_response_sets = [("KK04/LogicInference_OA", 0.05)]
-    # Get data
-    cld.get_cap_instr_resp(cap_instr_response_sets)
-
-    # Data sets with alpaca-style format
-    alpaca_output_sets = [("theprint/mindfulness-alpaca",0.11), ("iamtarun/python_code_instructions_18k_alpaca",0.1),
-                            ("mlabonne/Evol-Instruct-Python-26k", 0.16), ("garage-bAInd/Open-Platypus", 0.04),
-                            ("theprint/MysteryWriter", 0.15), ("totally-not-an-llm/EverythingLM-data-V3", 0.05),
-                            ("theprint/gamedev_alpaca", 0.12)]
-    # Get data
-    cld.get_alpaca_response(alpaca_output_sets)
-
-    # Data sets with question-solution format
-    science_qa_sets = [("tasksource/ScienceQA_text_only", 0.07)]
-    # Get data
-    cld.get_question_solution(science_qa_sets)
-
-    save_file()
+    
+    # Dataset lists by format
+    instruction_response_sets = [("anubrag/Python-CodeExercises-Evol", 0.2)]
+    input_output_sets = [("Kaeyze/computer-science-synthetic-dataset", 0.1)]
+    cap_instr_response_sets = [("Nan-Do/instructional_code-search-net-python", 0.1)]
+    instr_chosen_response_sets = []
+    question_answer_sets = []
+    question_response_sets = [("cognitivecomputations/dolphin-coder", 0.2)]
+    prompt_chosen_sets = []
+    alpaca_output_sets = [("iamtarun/code_instructions_120k_alpaca", 0.2),("Vezora/Tested-22k-Python-Alpaca", 0.2)]
+    question_choice_solution_sets = []
+    gpt_style_sets = []
+    
+    source_data = [
+        (instruction_response_sets, "instruction_response"),
+        (input_output_sets, "input_output"),
+        (cap_instr_response_sets, "cap_instruction_response"),
+        (question_answer_sets, "question_answer"),
+        (question_response_sets, "question_response"),
+        (instr_chosen_response_sets, "instr_chosen_resp"),
+        (prompt_chosen_sets, "prompt_chosen"),
+        (alpaca_output_sets, "alpaca_format"),
+        (question_choice_solution_sets, "question_solution"),
+        (gpt_style_sets, "gpt-style")
+    ]
+    
+    for dataset_list, format_name in source_data:
+        if len(dataset_list) > 0:
+            cld.process_datasets(dataset_list, format_name, config, new_dataset)
+    
+    save_file(new_dataset)

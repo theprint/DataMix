@@ -22,7 +22,7 @@ def read_alpaca(filename):
         dict or list: The parsed JSON data, which can be a dictionary, list, or any other JSON type.
     """
     try:
-        with open(filename, 'r') as file:
+        with open(filename, 'r', encoding='utf-8') as file:
             return json.load(file)
     except FileNotFoundError:
         print(f"The file {filename} was not found.")
@@ -54,10 +54,10 @@ def create_gpt_data(data):
     return gpt_dict
 
 
-data = read_alpaca("ReWiz-Data-20.0k-121024.json")
+data = read_alpaca("export/VanRossum-80.0k-131124.json")
 new_data = {"conversations": []}
 for entry in data:
     new_data["conversations"].append(create_gpt_data(entry))
-print(new_data)
+# print(new_data)
 
-save_file("ReWiz-GPT-Data-20.0k.json", new_data)
+save_file("export/VanRossum-80.0k-GPT-131124.json", new_data)
