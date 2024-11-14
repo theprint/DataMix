@@ -2,6 +2,12 @@
 
 This is a simple utility that combines a weighted number of entries from various source data sets from *Huggingface* and creates a new dataset file (JSON) from the sampled data. With this tool, you can combined data sets that supplement each other and easily control the ratio of contribution from each source.
 
+## Output
+
+DataMix creates a json file with a new dataset formatted to follow the **alpaca format**, where the user request is made up of two columns (instruction + input) and the response is returned (output).
+
+After the script has run, you can easily add a conversation/GPT-style version by simply running the **alpaca-to-gpt.py** script. No additional configuration is required for this, just run the file.
+
 ## Steps
 
 If you are working with gated datasets, you will need a Huggingface token. Get this from HF and set it up as an environment variable by adding it to a .env file as follows:
