@@ -4,6 +4,9 @@ import yaml
 import random
 from typing import Dict, Any
 
+MAX_INSTRUCTION_LENGTH = 4000
+MAX_OUTPUT_LENGTH = 4000
+
 @dataclass
 class DatasetFormat:
     instruction_key: str
@@ -16,15 +19,15 @@ def get_samples(total_samples: int, weight: float) -> int:
 def join_choices(entry):
     return "\n".join(f" - {c}" for c in entry["choices"])
 
-def process_dataset(dataset_info, format_config, config, new_dataset):
+def process_dataset(dataset_info, format_config, config, new_dataset, split="train"):
     dataset_name, weight = dataset_info
-    ds = load_dataset(dataset_name, split="train", token=config["hf_token"])
+    ds = load_dataset(dataset_name, split=split, token=config["hf_token"])
     ds = ds.shuffle(seed=config["seed"])
-    samples_count = get_samples(config["total_samples"], weight)
+    samples_count = min(get_samples(config["total_samples"], weight), len(ds))
     
     print(f"DATA SET: {dataset_name.upper()} | LOADING {samples_count} of {len(ds)} ENTRIES")
     
-    for d in range(min(samples_count, len(ds))):
+    for d in range(samples_count):
         entry = ds[d]
         input_text = ""
         
@@ -40,7 +43,8 @@ def process_dataset(dataset_info, format_config, config, new_dataset):
             "input": input_text,
             "output": entry[format_config.output_key]
         }
-        new_dataset.append(qa_set)
+        if len(qa_set["instruction"]) > 0 and len(qa_set["instruction"]) < MAX_INSTRUCTION_LENGTH and len(qa_set["output"]) > 0 and len(qa_set["output"]) < MAX_OUTPUT_LENGTH:
+            new_dataset.append(qa_set)
 
 def process_gpt_conversations(dataset_info, config, new_dataset):
     dataset_name, weight = dataset_info
@@ -52,11 +56,29 @@ def process_gpt_conversations(dataset_info, config, new_dataset):
     
     for d in range(min(samples_count, len(ds))):
         entry = ds[d]
+        # print(f"DEBUG: {entry}")
+        if "conversations" in entry:
+            sub_entry = entry["conversations"]
+            print(f"DEBUG: {sub_entry}")
+            user_in = None
+            ai_out = None
+            
+            for part in sub_entry:
+                print(f"DEBUG: {part}")
+                if "from" and "value" in part:
+                    if part["from"] == "user":
+                        user_in = part["value"]
+                    elif part["from"] == "gpt":
+                        ai_out = part["value"]
+                else:
+                    print("Error: Unsupported GPT data formatting.")
+                    break
+        
         qa_set = {
             "source": dataset_name,
-            "instruction": entry["human"],
+            "instruction": user_in,
             "input": "",
-            "output": entry["assistant"]
+            "output": ai_out
         }
         new_dataset.append(qa_set)
 

@@ -11,6 +11,34 @@ formats:
   cap_instruction_response:
     instruction_key: INSTRUCTION
     output_key: RESPONSE
+
+  cap_context_response:
+    instruction_key: Context
+    output_key: Response
+
+  cap_human_assistant:
+    instruction_key: Human
+    output_key: Assistant
+
+  problem_answer:
+    instruction_key: problem
+    output_key: answer
+
+  problem_description_response:
+    instruction_key: problem-description
+    output_key: response
+
+  problem_gold_standard:
+    instruction_key: problem
+    output_key: gold_standard_solution
+
+  prompt_question:
+    instruction_key: prompt
+    output_key: question
+
+  prompt_response:
+    instruction_key: prompt
+    output_key: response
   
   prompt_chosen:
     instruction_key: prompt
@@ -20,9 +48,17 @@ formats:
     instruction_key: instruction
     output_key: chosen_response
   
+  instr_demonstration:
+    instruction_key: instruction
+    output_key: demonstration
+
   input_output:
     instruction_key: input
     output_key: output
+
+  query_answer:
+    instruction_key: query
+    output_key: answer
 
   question_answer:
     instruction_key: question
