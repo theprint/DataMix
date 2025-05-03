@@ -59,12 +59,12 @@ def process_gpt_conversations(dataset_info, config, new_dataset):
         # print(f"DEBUG: {entry}")
         if "conversations" in entry:
             sub_entry = entry["conversations"]
-            print(f"DEBUG: {sub_entry}")
+            # print(f"DEBUG: {sub_entry}")
             user_in = None
             ai_out = None
             
             for part in sub_entry:
-                print(f"DEBUG: {part}")
+                # print(f"DEBUG: {part}")
                 if "from" and "value" in part:
                     if part["from"] == "user":
                         user_in = part["value"]
